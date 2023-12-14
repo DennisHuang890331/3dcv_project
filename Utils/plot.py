@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -60,6 +62,6 @@ def loss_plot(history:tf.keras.callbacks.History, path:str, withlr=False, lr_tra
             plt.ylabel(name[i])
             plt.xlabel('epochs')
             plt.legend(['train', 'validation'], loc='upper left')
-            plt.savefig(path + name[i] + '.png')
+            plt.savefig(os.path.join(path, name[i] + '.png'))
         plt.show()
         

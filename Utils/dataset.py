@@ -10,10 +10,9 @@ import tensorflow as tf
 class CityScapes:
 
     def __init__(self, 
-                 json_path='Utils/colormap_cityscapes.json',
-                 label_path='/home/ivlab/dennis_ws/dataset/cityscapes/labelIds/',
-                 image_path='/home/ivlab/dennis_ws/dataset/cityscapes/images',
-                 mode='labelIds',
+                 colormap='',
+                 label_dir='',
+                 image_dir='',
                  batch_size=64,
                  channel_first=False,
                  mask_2d=False,
@@ -21,15 +20,14 @@ class CityScapes:
                  classes=34,
                  image_shape=(256, 512, 3)) -> None:
                  
-        with open(json_path, 'r') as f:
+        with open(colormap, 'r') as f:
             self.color_table = json.load(f) 
         self.name_table = np.array([var[0] for var in self.color_table])
         self.id_table = np.array([var[1] for var in self.color_table])
         self.color_table = np.array([var[-1] for var in self.color_table])
 
-        self.mode = mode
-        self.image_path = image_path
-        self.label_path = label_path
+        self.image_dir = image_dir
+        self.label_dir = label_dir
         self.channel_first = channel_first
         self.mask_2d = mask_2d
         self.onehot = one_hot
@@ -82,11 +80,11 @@ class CityScapes:
         return dataset
 
     def load_data(self):
-        train_images = sorted(glob(os.path.join(self.image_path, "train/*")))
-        val_images = sorted(glob(os.path.join(self.image_path, "val/*")))
+        train_images = sorted(glob(os.path.join(self.image_dir, "train/*")))
+        val_images = sorted(glob(os.path.join(self.image_dir, "val/*")))
 
-        train_label = sorted(glob(os.path.join(self.label_path, "train/*")))
-        val_label = sorted(glob(os.path.join(self.label_path, "val/*")))
+        train_label = sorted(glob(os.path.join(self.label_dir, "train/*")))
+        val_label = sorted(glob(os.path.join(self.label_dir, "val/*")))
 
         train_dataset = self.gernerate_dataset(train_images, train_label)
         val_dataset = self.gernerate_dataset(val_images, val_label)
@@ -96,12 +94,14 @@ class CityScapes:
 class KITTI_segmantation:
 
     def __init__(self,
-                 json_path='//home/ivlab/dennis_ws/dataset/KITTI/segmantation/data_semantics/colormap_cityscapes.json',
-                 dir = '/home/ivlab/dennis_ws/dataset/KITTI/segmantation/data_semantics',
+                 json_path='Utils/colormap_cityscapes.json',
+                 label_dir='',
+                 image_dir='',
                  batch_size=64,
                  image_shape=(256, 512, 3)) -> None:
         self.json_path = json_path
-        self.dir = dir
+        self.label_dir = label_dir
+        self.image_dir = image_dir
         self.batch_size = batch_size
         self.image_shape = image_shape
 
@@ -156,8 +156,8 @@ class KITTI_segmantation:
         return dataset
 
     def load_data(self):
-        train_images = sorted(glob(os.path.join(self.dir, "training/image_2/*")))
-        train_label = sorted(glob(os.path.join(self.dir, "training/semantic/*")))
+        train_images = sorted(glob(os.path.join(self.image_dir, "*")))
+        train_label = sorted(glob(os.path.join(self.dir, "*")))
         train_dataset = self.gernerate_dataset(train_images, train_label)
         return train_dataset
     
