@@ -12,7 +12,7 @@ sess = tf.compat.v1.Session(config=config)
 
 CLASSES = 34
 batch_size = 16
-epoch = 50
+epoch = 75
 image_shape = (256, 512, 3)
 dataset = CityScapes(image_shape=image_shape, batch_size=batch_size, one_hot=True)
 (train_dataset, val_dataset) = dataset.load_data()
@@ -20,14 +20,14 @@ dataset = CityScapes(image_shape=image_shape, batch_size=batch_size, one_hot=Tru
 model = build_model(image_shape=image_shape, backbone_trainable=True, num_classes=CLASSES,
                     backbone='inceptionresnetv2', rate_dropout=0.2)
 
-lr_base = 1e-5
+lr_base = 5e-5
 
 total_steps = int(len(train_dataset) * epoch)
-warmup_epoch_percentage = 0.1
+warmup_epoch_percentage = 0.2
 warmup_steps = int(total_steps * warmup_epoch_percentage)
 scheduled_lrs = lr_schedular.WarmUpCosine(lr_base, total_steps, 0, warmup_steps)
 
-optimizer = tf.keras.optimizers.Lion(scheduled_lrs, weight_decay=0.001)
+optimizer = tf.keras.optimizers.Lion(scheduled_lrs, weight_decay=0.01)
 
 tracker = callback.LearningRateTracker()
 callbacks = [tf.keras.callbacks.EarlyStopping(patience=30, monitor='val_loss'),
