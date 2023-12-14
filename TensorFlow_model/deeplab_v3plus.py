@@ -111,7 +111,7 @@ def build_model(image_shape=(512, 512, 3), num_classes=20,
 
     if backbone == 'resnet50':
         backbone = tf.keras.applications.ResNet50(
-            weights="Checkpoints/resnets/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5", 
+            weights='imagenet',
             include_top=False, input_tensor=model_input        
         )
         x = backbone.get_layer("conv4_block6_2_relu").output
@@ -135,7 +135,7 @@ def build_model(image_shape=(512, 512, 3), num_classes=20,
         model_output = tf.keras.layers.Conv2D(num_classes, kernel_size=(1, 1), padding='same')(x)
     elif backbone == 'inceptionresnetv2':
         backbone = tf.keras.applications.InceptionResNetV2(
-            weights='Checkpoints/deeplabv3plus/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels_notop.h5',
+            weights='imagenet',
             include_top=False, input_tensor=model_input
         )
 
