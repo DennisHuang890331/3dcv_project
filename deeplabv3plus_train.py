@@ -27,7 +27,7 @@ def parse_opt():
                         help='Traning learning rate.')
     parser.add_argument('--warmup-rate', type=float, default=0.25,
                         help='Warm up ratio during training.')
-    parser.add_argument('--save-dir', type=str, default='Checkpoints/deeplabv3plus',
+    parser.add_argument('--save-dir', type=str, default='Checkpoints/deeplabv3plus/',
                         help='Directory for save model.')
     parser.add_argument('--backbone', choices=['resnet50', 'inceptionresnetv2'], default='inceptionresnetv2',
                         help='Backbone for Deeplabv3+.')
