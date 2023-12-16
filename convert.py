@@ -1,11 +1,11 @@
 import argparse
 import os
+
 import numpy as np
 from tensorflow.python.compiler.tensorrt import trt_convert
 
 from TensorFlow_model.deeplab_v3plus import *
 from TensorFlow_model.segformer import *
-
 
 
 def parse_opt():
@@ -78,4 +78,3 @@ if __name__ == '__main__':
     
     convert_tensorrt(model_dir=SAVEDIR, tensorrt_dir=EXPORTDIR, fp16=fp16)
     print("Finish. Your model location: {}".format(EXPORTDIR))
-
