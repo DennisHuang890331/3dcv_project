@@ -67,3 +67,15 @@ class KL_Focal_Loss(tf.losses.Loss):
         )
         return tf.keras.losses.categorical_focal_crossentropy(y_true, y_pred) + tf.keras.losses.kl_divergence(y_true, y_pred)
 
+class KL_Loss(tf.losses.Loss):
+
+    def __init__(self,label_smoothing=0.0 ,reduction=losses_utils.ReductionV2.AUTO, name=None):
+        super().__init__(reduction, name)
+        self.label_smoothing = label_smoothing
+    
+    def call(self, y_true, y_pred):
+        num_classes = len(y_true)
+        y_true = y_true * (1.0 - self.label_smoothing) + (
+            self.label_smoothing / num_classes
+        )
+        return tf.keras.losses.kl_divergence(y_true, y_pred)
