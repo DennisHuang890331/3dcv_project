@@ -97,7 +97,7 @@ python3 convert.py --model  # Tensorflow model location.
 ## Inference
 ```bash
 from Utils.utils import *
-model = tf.keras.models.load_model('your TensorFlow or TensorRT model')
+model = tf.keras.models.load_model('your TensorFlow or TensorRT model', compile=False)
 image = # your image size must be (256, 512, 3)
 # Tensorflow
 prediction = infer(model, image, mode='tensorflow')
