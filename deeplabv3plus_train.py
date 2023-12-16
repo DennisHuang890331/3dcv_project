@@ -33,6 +33,8 @@ def parse_opt():
                         help='Backbone for Deeplabv3+.')
     parser.add_argument('--patience', type=int, default=30,
                         help='Early stoping patience param.')
+    parser.add_argument('--label-smooth', type=float, default=0.2,
+                        help='Label smooth param during training.')
     return parser.parse_known_args()[0]
 
 def load_dataset(opt, root):
@@ -88,7 +90,7 @@ if __name__ == '__main__':
                 tracker,
                 tf.keras.callbacks.ModelCheckpoint(os.path.join(save_dir, 'deeplabv3plus_inception_256x512.h5'),
                                                     monitor='val_loss', save_best_only=True, verbose=1)]
-    loss = losses.KL_Focal_Loss()
+    loss = losses.KL_Dice_Loss(label_smoothing=opt.label_smooth)
 
     if opt.dataset == 'Cityscapes':
         train_dataset, val_dataset = load_dataset(opt, ROOT_DIR)

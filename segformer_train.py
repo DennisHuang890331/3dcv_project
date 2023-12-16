@@ -4,7 +4,7 @@ import os
 import tensorflow as tf
 
 from TensorFlow_model.segformer import SegFormer_B2
-from Utils import callback, lr_schedular, plot
+from Utils import callback, lr_schedular, plot, losses
 from Utils.dataset import CityScapes, KITTI_segmantation
 from Utils.utils import *
 
@@ -23,7 +23,7 @@ def parse_opt():
                         help='Directory of dataset images.')
     parser.add_argument('--label-dir', type=str, default='',
                         help='Directory of dataset images.')
-    parser.add_argument('--lr', type=float, default=5e-5,
+    parser.add_argument('--lr', type=float, default=1e-5,
                         help='Traning learning rate.')
     parser.add_argument('--warmup-rate', type=float, default=0.1,
                         help='Warm up ratio during training.')
@@ -31,7 +31,7 @@ def parse_opt():
                         help='Directory for save model.')
     parser.add_argument('--patience', type=int, default=30,
                         help='Early stoping patience param.')
-    parser.add_argument('--label-smooth', type=float, default=0.5,
+    parser.add_argument('--label-smooth', type=float, default=0.2,
                         help='Label smooth param during training.')
     return parser.parse_known_args()[0]
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                 tracker,
                 tf.keras.callbacks.ModelCheckpoint(os.path.join(save_dir, 'segformerb2_256x512.h5'),
                                                     monitor='val_loss', save_best_only=True, verbose=1)]
-    loss = tf.keras.losses.CategoricalCrossentropy(label_smoothing=opt.label_smooth)
+    loss = losses.KL_Focal_Loss(label_smoothing=opt.label_smooth)
 
     if opt.dataset == 'Cityscapes':
         train_dataset, val_dataset = load_dataset(opt, ROOT_DIR)
@@ -96,7 +96,7 @@ if __name__ == '__main__':
         warmup_epoch_percentage = opt.warmup_rate
         warmup_steps = int(total_steps * warmup_epoch_percentage)
         scheduled_lrs = lr_schedular.WarmUpCosine(lr_base, total_steps, 0, warmup_steps)
-        optimizer = tf.keras.optimizers.Lion(scheduled_lrs)
+        optimizer = tf.keras.optimizers.Lion(scheduled_lrs, weight_decay=0.01)
         model.compile(optimizer=optimizer, loss=loss, metrics=["accuracy"])
         history =  model.fit(train_dataset, validation_data=val_dataset, callbacks=callbacks, epochs=epoch, workers=8)
         plot.loss_plot(history, save_dir, lr_tracker=tracker)
